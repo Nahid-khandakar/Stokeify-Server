@@ -10,7 +10,7 @@ app.use(express.json())
 
 
 //mongo db element
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.omwf4.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -28,6 +28,16 @@ async function run() {
             const cursor = itemCollection.find(query)
             const result = await cursor.toArray()
             res.send(result)
+        })
+
+        //find one item using item id
+        app.get('/items/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: ObjectId(id) }
+            console.log(query)
+            const result = await itemCollection.findOne(query)
+            res.send(result)
+
         })
 
     } finally {
