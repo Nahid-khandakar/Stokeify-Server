@@ -34,9 +34,19 @@ async function run() {
         app.get('/items/:id', async (req, res) => {
             const id = req.params.id
             const query = { _id: ObjectId(id) }
-            console.log(query)
             const result = await itemCollection.findOne(query)
             res.send(result)
+
+        })
+
+        //update item quantity
+        app.put("/items/:id", (req, res) => {
+            const id = req.params.id
+            const item = req.body
+
+            console.log(id)
+            console.log(item)
+
 
         })
 
