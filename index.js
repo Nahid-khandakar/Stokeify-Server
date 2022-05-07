@@ -68,6 +68,14 @@ async function run() {
             res.send(result)
         })
 
+        //add new item
+        app.post('/items', async (req, res) => {
+            const doc = req.body
+            console.log(doc)
+            const result = await itemCollection.insertOne(doc)
+            res.send(result)
+        })
+
     } finally {
         //await client.close();
     }
