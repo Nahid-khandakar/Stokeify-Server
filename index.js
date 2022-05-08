@@ -16,6 +16,24 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@clu
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 
+
+//verify token
+
+function verifyToken(token) {
+    let email;
+    jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+        if (err) {
+            email = 'Invalid Email'
+        }
+        if (decoded) {
+            email = decoded
+            console.log("from function", decoded)
+        }
+    });
+    return email
+}
+
+
 //main function to connect everything
 async function run() {
     try {
@@ -69,13 +87,34 @@ async function run() {
             res.send(result)
         })
 
-        //add new item
+
+
+
+        //add new item with gmail with token verification
         app.post('/items', async (req, res) => {
+
+            const tokenInfo = req.headers.authorization
+            console.log(tokenInfo)
+            const [email, accessToken] = tokenInfo?.split(' ')
+            console.log(accessToken)
+
+            var decoded = verifyToken(accessToken)
+            console.log('inner upload', decoded.email)
+
+
             const doc = req.body
-            //console.log(doc)
-            const result = await itemCollection.insertOne(doc)
-            res.send(result)
+            console.log(doc)
+
+            if (email === decoded.email) {
+                const result = await itemCollection.insertOne(doc)
+                res.send(result)
+            }
+            else {
+                res.send("Unauthorized email")
+            }
+
         })
+
 
         //when login a use
         app.post("/login", (req, res) => {
