@@ -17,7 +17,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 
 
-//verify token
+//verify  token
 
 function verifyToken(token) {
     let email;
@@ -41,6 +41,7 @@ async function run() {
         const itemCollection = client.db("stock").collection("items");
 
 
+
         //find all items
         app.get('/items', async (req, res) => {
             const query = {}
@@ -48,6 +49,29 @@ async function run() {
             const result = await cursor.toArray()
             res.send(result)
         })
+
+        //find all item using email and jwt
+        app.get("/items", async (req, res) => {
+            const tokenInfo = req.headers.authorization;
+            const [email, accessToken] = tokenInfo?.split(" ")
+            var decoded = verifyToken(accessToken)
+
+            email = req.query.email
+
+            if (email === decoded.email) {
+                const query = { email: email }
+                const cursor = itemCollection.find(query)
+                const result = await cursor.toArray()
+                res.send(result);
+            }
+            else {
+                res.send({ success: 'Unauthorized Access' })
+            }
+        })
+
+
+
+
 
         //find one item using item id
         app.get('/items/:id', async (req, res) => {
@@ -57,6 +81,7 @@ async function run() {
             res.send(result)
 
         })
+
 
         //update item quantity
         app.put("/items/:id", async (req, res) => {
@@ -125,6 +150,11 @@ async function run() {
             res.send({ token })
 
         })
+
+
+
+
+
 
     } finally {
         //await client.close();
