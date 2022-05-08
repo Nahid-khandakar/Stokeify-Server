@@ -3,6 +3,7 @@ const app = express()
 const port = process.env.PORT || 5000
 var cors = require('cors')
 require('dotenv').config()
+const jwt = require('jsonwebtoken');
 
 //Middleware
 app.use(cors())
@@ -71,9 +72,19 @@ async function run() {
         //add new item
         app.post('/items', async (req, res) => {
             const doc = req.body
-            console.log(doc)
+            //console.log(doc)
             const result = await itemCollection.insertOne(doc)
             res.send(result)
+        })
+
+        //when login a use
+        app.post("/login", (req, res) => {
+            const email = req.body
+            console.log(email)
+            const token = jwt.sign(email, process.env.ACCESS_TOKEN);
+            console.log(token)
+            res.send({ token })
+
         })
 
     } finally {
