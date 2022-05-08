@@ -71,8 +71,6 @@ async function run() {
 
 
 
-
-
         //find one item using item id
         app.get('/items/:id', async (req, res) => {
             const id = req.params.id
@@ -111,8 +109,6 @@ async function run() {
             const result = await itemCollection.deleteOne(query);
             res.send(result)
         })
-
-
 
 
         //add new item with gmail with token verification
